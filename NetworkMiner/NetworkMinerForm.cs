@@ -6,6 +6,7 @@
 
 
 using System;
+using System.Text.RegularExpressions;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
@@ -1148,7 +1149,7 @@ namespace NetworkMiner {
                     //this.ShowAnomaly("Error: Exception when loading image \"" + file.Filename + "\". " + e.Message, DateTime.Now);
                 }
                 if (extension == "doc" || extension == "docx" || extension == "pdf" || extension == "xls" || extension == "xlsx" || extension == "ppt")
-                    {
+                {
                     string[] filelog = {
                     file.InitialFrameNumber.ToString(),
                     file.Filename,
@@ -1164,15 +1165,17 @@ namespace NetworkMiner {
                     file.FilePath,
                     fileDetails,
                     };
+                    string number_pattern = @"[0-9]*$";
+                    string ip_pattern = @"[0-9]+(?:\.[0-9]+){0,3}";
                 //todo filelog[i] Ð´ÈëmongoÊý¾Ý¿â
                     //document.Add("id", filelog[0]);
                     document.Add("Name", filelog[1]);
                     document.Add("Extension", filelog[2]);
                     document.Add("FileSizeString", filelog[3]);
-                    document.Add("SourceHost", filelog[4]);
-                    document.Add("SourcePort", filelog[5]);
-                    document.Add("DestinationHost", filelog[6]);
-                    document.Add("DestinationPort", filelog[7]);
+                    document.Add("SourceHost", new Regex(ip_pattern).Match(filelog[4]).Value);
+                    document.Add("SourcePort", new Regex(number_pattern).Match(filelog[5]).Value);
+                    document.Add("DestinationHost", new Regex(ip_pattern).Match(filelog[6]).Value);
+                    document.Add("DestinationPort", new Regex(number_pattern).Match(filelog[7]).Value);
                     document.Add("Timestamp", filelog[9]);
                     collection.InsertOneAsync(document);
                     //sw.WriteLine(file + this.guiProperties.ToCustomTimeZoneString(file.Timestamp));
